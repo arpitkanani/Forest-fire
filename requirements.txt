@@ -2,3 +2,9 @@ Flask
 numpy
 pandas
 scikit-learn
+dill
+xgboost
+catboost
+mlflow
+dagshub
+ipykernel

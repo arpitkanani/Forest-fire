@@ -43,9 +43,9 @@ def evalute_model(X_train,y_train,X_test,y_test,models,param):
         report={}
         for i in range(len(models)):
             model=list(models.values())[i]
-            param =param[list(models.keys())[i]]
+            para=param[list(models.keys())[i]]
 
-            gs=GridSearchCV(model,param,cv=3)
+            gs=GridSearchCV(model,param_grid=para,cv=3,n_jobs=-1)
             gs.fit(X_train,y_train)
 
             model.set_params(**gs.best_params_)

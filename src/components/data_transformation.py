@@ -25,9 +25,12 @@ class DataTransformation:
 
             logging.info("data transformation initiated")
             df=pd.read_csv("artifacts/train.csv")
-            X=df.iloc[:,:-1]
-            num_columns=X.select_dtypes(exclude='object').columns
-            cat_columns=X.select_dtypes(include='object').columns
+            
+            target_col = 'FWI'
+
+            num_columns = df.select_dtypes(exclude='object').drop(columns=[target_col]).columns
+            cat_columns = df.select_dtypes(include='object').columns
+
 
             logging.info("pipeline initiated.")
 
@@ -41,16 +44,21 @@ class DataTransformation:
 
             cat_pipeline=Pipeline(
                 steps=[
-                    ('imputer',SimpleImputer(strategy='most-frequent')),
+                    ('imputer',SimpleImputer(strategy='most_frequent')),
                     ('one_hot_encoder',OneHotEncoder()),
-                    ('scaler',StandardScaler())
+                    ("scaler",StandardScaler(with_mean=False))
                 ]
             )
             
-            preprocessor = ColumnTransformer([
-                ('num_pipeline',num_pipeline,num_columns),
-                ('cat_pipeline',cat_pipeline,cat_columns)
-            ])
+            preprocessor = ColumnTransformer(
+                [
+                    ('num_pipeline', num_pipeline, num_columns),
+                    ('cat_pipeline', cat_pipeline, cat_columns)
+                ],
+                remainder='drop',
+                sparse_threshold=0
+            )
+
             logging.info("pipeline completed.")
 
             
@@ -73,19 +81,23 @@ class DataTransformation:
             target_col='FWI'
             drop_columns=[target_col]
             
-            input_feature_train_df=train_df.drop(columns=drop_columns,axis=1)
+            input_feature_train_df=train_df.drop(columns=['FWI'])
             target_feature_train_df=train_df[target_col]
 
-            input_feature_test_df=test_df.drop(columns=drop_columns,axis=1)
+            input_feature_test_df=test_df.drop(columns=['FWI'])
             target_feature_test_df=test_df[target_col]
 
-            input_feature_train_arr=preprocessor_obj.fit_transform(input_feature_train_df)
-            input_feature_test_arr=preprocessor_obj.transform(input_feature_test_df)
-
             logging.info("Applying preprocessing on both dataset.")
+            input_feature_train_arr = preprocessor_obj.fit_transform(input_feature_train_df)
+            input_feature_test_arr = preprocessor_obj.transform(input_feature_test_df)
 
-            train_arr=np.c_[input_feature_train_arr,np.array(target_feature_train_df)]
-            test_arr=np.c_[input_feature_test_arr,np.array(target_feature_test_df)]
+            target_feature_train_df = target_feature_train_df.reset_index(drop=True)
+            target_feature_test_df = target_feature_test_df.reset_index(drop=True)
+
+            train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]
+            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
+
+
 
             save_object(
                 file_path=self.data_transformation_config.preprocessor_obj_path,

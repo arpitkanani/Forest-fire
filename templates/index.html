@@ -1,1 +1,200 @@
-<h1>this is home page.</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Algerian Forest Fire Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa, #eef2f7);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 60px auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 32px;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-top: 32px;
+            font-size: 22px;
+        }
+
+        p {
+            line-height: 1.7;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        ul {
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 40px auto 0;
+            padding: 14px 32px;
+            background: #d97706;
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: #b45309;
+        }
+
+        .btn-wrapper {
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* ---------------- RESPONSIVE ---------------- */
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 30px 16px;
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 15px;
+            }
+
+            li {
+                font-size: 14px;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 22px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🔥 Algerian Forest Fire Prediction</h1>
+
+    <p>
+        This project uses <strong>regression-based machine learning models</strong> to predict
+        the <strong>Fire Weather Index (FWI)</strong>, a continuous indicator representing
+        the potential intensity and severity of forest fires in Algeria.
+    </p>
+
+    <h2>🌍 Regions Covered</h2>
+    <ul>
+        <li><strong>Bejaia Region (Region = 0)</strong> – More humid, Mediterranean climate</li>
+        <li><strong>Sidi-Bel-Abbes Region (Region = 1)</strong> – Hotter and drier conditions</li>
+    </ul>
+
+    <h2>📊 Dataset Overview</h2>
+    <p>
+        The dataset contains daily meteorological observations collected during the
+        high fire-risk season. Each record represents weather conditions and fire-related
+        indicators.
+    </p>
+
+    <h2>📌 Input Features</h2>
+    <ul>
+        <li><strong>Temperature</strong> – Ambient temperature (°C)</li>
+        <li><strong>RH</strong> – Relative humidity (%)</li>
+        <li><strong>Ws</strong> – Wind speed (km/h)</li>
+        <li><strong>Rain</strong> – Rainfall amount (mm)</li>
+        <li><strong>FFMC</strong> – Fine Fuel Moisture Code</li>
+        <li><strong>DMC</strong> – Duff Moisture Code</li>
+        <li><strong>ISI</strong> – Initial Spread Index</li>
+        <li>
+            <strong>Classes</strong> – Fire occurrence indicator:
+            <ul>
+                <li>0 → No Fire</li>
+                <li>1 → Fire</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Region</strong> – Location indicator:
+            <ul>
+                <li>0 → Bejaia</li>
+                <li>1 → Sidi-Bel-Abbes</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>🎯 Objective</h2>
+    <p>
+        To build a robust <strong>regression model</strong> that predicts
+        <strong>Fire Weather Index (FWI)</strong> using environmental, meteorological,
+        and regional features to support fire risk assessment.
+    </p>
+
+    <div class="btn-wrapper">
+        <a href="/predictdata" class="btn">🚀 Predict Fire Weather Index</a>
+    </div>
+
+    <div class="footer">
+        © 2026 | Algerian Forest Fire Prediction | Machine Learning Project
+    </div>
+</div>
+
+</body>
+</html>

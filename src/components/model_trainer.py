@@ -1,6 +1,4 @@
 import os,sys
-import numpy as np 
-import pandas as pd
 import mlflow
 import dagshub
 
@@ -11,12 +9,14 @@ from xgboost import XGBRegressor
 from catboost import CatBoostRegressor
 
 
-from src.utils import evalute_model
+from src.utils import evalute_model,save_object,evalute_metrics
 from src.exception import CustomException
 from src.logger import logging
 from dataclasses import dataclass
+from urllib.parse import urlparse
 
-dagshub.init(repo_owner='arpitkanani', repo_name='Cement-Strengthen-prediction-', mlflow=True)
+
+dagshub.init(repo_owner='arpitkanani', repo_name='Forest-fire', mlflow=True) #type:ignore
 
 @dataclass
 class ModelTrainerConfig:
@@ -26,23 +26,23 @@ class ModelTrainer:
     def __init__(self):
         self.model_trainer_config=ModelTrainerConfig()
     
-    def initate_model_trainer(self,train_arr,test_arr):
+    def initate_model_trainer(self,train_array,test_array):
         try:
             logging.info("model trainer is start.")
             X_train,y_train,X_test,y_test=(
-                train_arr[:,:-1],
-                train_arr[:-1],
-                test_arr[:,:-1],
-                test_arr[:-1]
+                train_array[:,:-1],
+                train_array[:,-1],
+                test_array[:,:-1],
+                test_array[:,-1]
             )
 
             models= {
-                "Linear Regerssion":LinearRegression(),
+                "Linear Regression":LinearRegression(),
                 "Lasso":Lasso(),
                 "Ridge":Ridge(),
                 "DecisionTree Regeressor":DecisionTreeRegressor(),
                 "RandomForest Regressor":RandomForestRegressor(),
-                "AdaBoost Rgeressor":AdaBoostRegressor(),
+                "AdaBoost Regressor":AdaBoostRegressor(),
                 "GradiantBoost Regressor":GradientBoostingRegressor(),
                 "XGB Regressor":XGBRegressor(),
                 "CatBoost Regressor":CatBoostRegressor()
@@ -55,13 +55,13 @@ class ModelTrainer:
                 },
 
                 "Lasso": {
-                    "alpha": [0.001, 0.01, 0.1, 1, 10],
-                    "max_iter": [1000, 5000]
+                    #"alpha": [0.001, 0.01, 0.1, 1, 10],
+                    #"max_iter": [1000, 5000]
                 },
 
                 "Ridge": {
                     "alpha": [0.1, 1, 10, 50],
-                    "solver": ["auto", "svd", "cholesky"]
+                    #"solver": ["auto", "svd", "cholesky"]
                 },
 
                 "DecisionTree Regeressor": {
@@ -99,10 +99,10 @@ class ModelTrainer:
                     "reg_lambda": [1, 5, 10]    
                 },
                 'CatBoost Regressor':{
-                    #"iterations": [300, 500],
-                    #"learning_rate": [0.03, 0.05, 0.1],
-                    "depth": [4, 6, 8],
-                    "l2_leaf_reg": [1, 3, 5, 7]
+                    "iterations": [300, 500],
+                    "learning_rate": [0.03, 0.05, 0.1],
+                    #"depth": [4, 6, 8],
+                    #"l2_leaf_reg": [1, 3, 5, 7]
                 }
                 
             }
@@ -125,6 +125,44 @@ class ModelTrainer:
             models_names=list(param.keys())
             
             actual_model=""
+            for model in models_names:
+                if best_model_name == model:
+                    actual_model=actual_model + model
+            
+            
+            best_params=param[actual_model]
+
+            mlflow.set_registry_uri("https://dagshub.com/arpitkanani/Forest-fire.mlflow")
+            tracking_url_type_store= urlparse(mlflow.get_tracking_uri()).scheme
+
+            #ml flow pipe line
+            with mlflow.start_run():
+                predicted_qualities=best_model.predict(X_test)
+
+                (score,rmse,mae)=evalute_metrics(y_test,predicted_qualities)
+
+                mlflow.log_params(best_params)
+
+                mlflow.log_metric("rmse",rmse)
+                mlflow.log_metric("r2",score)
+                mlflow.log_metric("mae",mae)
+                
+
+                if tracking_url_type_store != 'file':
+                    mlflow.sklearn.log_model(sk_model=best_model,name="model") # type: ignore
+
+                else:
+                    mlflow.sklearn.log_model(best_model,'model') # type: ignore
+
+            if best_model_score<0.6:
+                logging.info(f"not a best model found in training and test dataset")
+                raise CustomException("No best Model Found") # type: ignore
+            
+            save_object(
+                file_path=self.model_trainer_config.train_model_file_path
+                ,obj=best_model
+            )
+            
 
         except Exception as e:
             logging.info("error occured in model trainer method.")

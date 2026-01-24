@@ -104,26 +104,6 @@ A **Flask-based web application** allows users to:
 
 ---
 
-## 📂 Project Structure
-Algerian-Forest-Fire-Prediction/
-│
-├── src/
-│ ├── components/
-│ ├── pipelines/
-│ └── utils/
-│
-├── templates/
-│ ├── index.html
-│ └── home.html
-│
-├── app.py
-├── requirements.txt
-├── README.md
-└── artifacts/
-
-
----
-
 ## ▶️ How to Run Locally
 
 ### 1️⃣ Clone the repository
